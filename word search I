@@ -1,0 +1,26 @@
+visit = set()
+def dfs(x,y,ind):
+    if ind == len(word):
+        return True
+    if x >= len(board) or x < 0:
+        return False
+    if y >= len(board[0]) or y < 0:
+        return False
+    if (x,y) in visit:
+        return False
+    if board[x][y] != word[ind]:
+        return False
+    visit.add((x,y))
+    res = (dfs(x + 1, y, ind + 1) or
+           dfs(x - 1, y, ind + 1) or
+           dfs(x, y + 1, ind + 1) or
+           dfs(x, y - 1, ind + 1))
+    visit.remove((x,y))
+    return res
+
+
+for i in range(len(board)):
+    for j in range(len(board[0])):
+        if dfs(i,j,0):
+            return True
+return False
