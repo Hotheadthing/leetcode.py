@@ -1,0 +1,65 @@
+class TrieNode:
+    def __init__(self):
+        self.children = {}
+        self.is_end = False
+        self.freq = 0
+    def addword(self,word):
+        node = self
+        node.freq += 1
+        for chr in word:
+            if chr not in node.children:
+                node.children[chr] = TrieNode()
+            node = node.children[chr]
+            node.freq += 1
+        node.is_end = True
+    
+    def remove(self,word):
+        node = self
+        node.freq -= 1
+        for chr in word:
+            if chr in node.children:
+                node = node.children[chr]
+                node.freq -= 1
+                
+class Solution:
+    def findWords(self, board: List[List[str]], words: List[str]) -> List[str]:
+        root = TrieNode()
+        for word in words:
+            root.addword(word)
+        
+        rows = len(board)
+        colm = len(board[0])
+        visit = set()
+        result = set()
+
+        def dfs(x,y,node,string):
+            if x < 0 or x >= rows:
+                return
+            if y < 0 or y >= colm:
+                return
+            if (x,y) in visit:
+                return
+            if board[x][y] not in node.children:
+                return
+            if node.children[board[x][y]].freq < 1:
+                return
+            
+            visit.add((x,y))
+            node = node.children[board[x][y]]
+            string += board[x][y]
+            if node.is_end == True:
+                node.is_end = False
+                result.add(string)
+                root.remove(string)
+            dfs(x+1,y,node,string)
+            dfs(x-1,y,node,string)
+            dfs(x,y+1,node,string)
+            dfs(x,y-1,node,string)
+            visit.remove((x,y))
+        
+        for i in range(rows):
+            for j in range(colm):
+                dfs(i,j,root,"")
+        
+        return list(result)
+
